@@ -10,7 +10,7 @@ void a::OpxCB00()
     
     SetFlag(C, (bReg & 0x80) == 1);
     
-    bReg << 1;
+    bReg <<= 1;
     bReg |= msb;
 
     SetFlag(Z, bReg == 0);
@@ -26,7 +26,7 @@ void a::OpxCB01()
     
     SetFlag(C, (cReg & 0x80) == 1);
     
-    cReg << 1;
+    cReg <<= 1;
     cReg |= msb;
 
     SetFlag(Z, cReg == 0);
@@ -42,7 +42,7 @@ void a::OpxCB02()
     
     SetFlag(C, (dReg & 0x80) == 1);
     
-    dReg << 1;
+    dReg <<= 1;
     dReg |= msb;
 
     SetFlag(Z, dReg == 0);
@@ -58,7 +58,7 @@ void a::OpxCB03()
     
     SetFlag(C, (eReg & 0x80) == 1);
     
-    eReg << 1;
+    eReg <<= 1;
     eReg |= msb;
 
     SetFlag(Z, eReg == 0);
@@ -74,7 +74,7 @@ void a::OpxCB04()
     
     SetFlag(C, (hReg & 0x80) == 1);
     
-    hReg << 1;
+    hReg <<= 1;
     hReg |= msb;
 
     SetFlag(Z, hReg == 0);
@@ -90,7 +90,7 @@ void a::OpxCB05()
     
     SetFlag(C, (lReg & 0x80) == 1);
     
-    lReg << 1;
+    lReg <<= 1;
     lReg |= msb;
 
     SetFlag(Z, lReg == 0);
@@ -110,7 +110,7 @@ void a::OpxCB06()
     
     SetFlag(C, (data & 0x80) == 1);
     
-    data << 1;
+    data <<= 1;
     data |= msb;
 
     write(HL, data);
@@ -128,7 +128,7 @@ void a::OpxCB07()
     
     SetFlag(C, (aReg & 0x80) == 1);
     
-    aReg << 1;
+    aReg <<= 1;
     aReg |= msb;
 
     SetFlag(Z, aReg == 0);
@@ -144,7 +144,7 @@ void a::OpxCB08()
     
     SetFlag(C, (bReg & 0x01) == 1);
     
-    bReg >> 1;
+    bReg >>= 1;
     bReg |= lsb;
 
     SetFlag(Z, bReg == 0);
@@ -160,7 +160,7 @@ void a::OpxCB09()
     
     SetFlag(C, (cReg & 0x01) == 1);
     
-    cReg >> 1;
+    cReg >>= 1;
     cReg |= lsb;
 
     SetFlag(Z, cReg == 0);
@@ -176,7 +176,7 @@ void a::OpxCB0A()
     
     SetFlag(C, (dReg & 0x01) == 1);
     
-    dReg >> 1;
+    dReg >>= 1;
     dReg |= lsb;
 
     SetFlag(Z, dReg == 0);
@@ -192,7 +192,7 @@ void a::OpxCB0B()
     
     SetFlag(C, (eReg & 0x01) == 1);
     
-    eReg >> 1;
+    eReg >>= 1;
     eReg |= lsb;
 
     SetFlag(Z, eReg == 0);
@@ -208,7 +208,7 @@ void a::OpxCB0C()
     
     SetFlag(C, (hReg & 0x01) == 1);
     
-    hReg >> 1;
+    hReg >>= 1;
     hReg |= lsb;
 
     SetFlag(Z, hReg == 0);
@@ -224,7 +224,7 @@ void a::OpxCB0D()
     
     SetFlag(C, (lReg & 0x01) == 1);
     
-    lReg >> 1;
+    lReg >>= 1;
     lReg |= lsb;
 
     SetFlag(Z, lReg == 0);
@@ -244,7 +244,7 @@ void a::OpxCB0E()
     
     SetFlag(C, (data & 0x01) == 1);
     
-    data >> 1;
+    data >>= 1;
     data |= lsb;
 
     write(HL, data);
@@ -261,7 +261,7 @@ void a::OpxCB0F()
     
     SetFlag(C, (aReg & 0x01) == 1);
     
-    aReg >> 1;
+    aReg >>= 1;
     aReg |= lsb;
 
     SetFlag(Z, aReg == 0);
@@ -273,7 +273,7 @@ void a::OpxCB10()
 {
     cycles = 2;
         
-    bReg << 1;
+    bReg <<= 1;
     if (GetFlag(C) == 1)
     {
         bReg |= 0x01;
@@ -288,7 +288,7 @@ void a::OpxCB11()
 {
     cycles = 2;
         
-    cReg << 1;
+    cReg <<= 1;
     if (GetFlag(C) == 1)
     {
         cReg |= 0x01;
@@ -303,7 +303,7 @@ void a::OpxCB12()
 {
     cycles = 2;
         
-    dReg << 1;
+    dReg <<= 1;
     if (GetFlag(C) == 1)
     {
         dReg |= 0x01;
@@ -318,7 +318,7 @@ void a::OpxCB13()
 {
     cycles = 2;
         
-    eReg << 1;
+    eReg <<= 1;
     if (GetFlag(C) == 1)
     {
         eReg |= 0x01;
@@ -333,7 +333,7 @@ void a::OpxCB14()
 {
     cycles = 2;
         
-    hReg << 1;
+    hReg <<= 1;
     if (GetFlag(C) == 1)
     {
         hReg |= 0x01;
@@ -348,7 +348,7 @@ void a::OpxCB15()
 {
     cycles = 2;
         
-    lReg << 1;
+    lReg <<= 1;
     if (GetFlag(C) == 1)
     {
         lReg |= 0x01;
@@ -366,7 +366,7 @@ void a::OpxCB16()
     uint16_t HL = ((hReg << 8) | lReg);
     uint8_t data = read(HL);
     
-    data << 1;
+    data <<= 1;
     if (GetFlag(C) == 1)
     {
         data |= 0x01;
@@ -383,7 +383,7 @@ void a::OpxCB17()
 {
     cycles = 2;
         
-    aReg << 1;
+    aReg <<= 1;
     if (GetFlag(C) == 1)
     {
         aReg |= 0x01;
@@ -398,7 +398,7 @@ void a::OpxCB18()
 {
     cycles = 2;
         
-    bReg >> 1;
+    bReg >>= 1;
     if (GetFlag(C) == 1)
     {
         bReg |= 0x80;
@@ -413,7 +413,7 @@ void a::OpxCB19()
 {
     cycles = 2;
         
-    cReg >> 1;
+    cReg >>= 1;
     if (GetFlag(C) == 1)
     {
         cReg |= 0x80;
@@ -428,7 +428,7 @@ void a::OpxCB1A()
 {
     cycles = 2;
         
-    dReg >> 1;
+    dReg >>= 1;
     if (GetFlag(C) == 1)
     {
         dReg |= 0x80;
@@ -443,7 +443,7 @@ void a::OpxCB1B()
 {
     cycles = 2;
         
-    eReg >> 1;
+    eReg >>= 1;
     if (GetFlag(C) == 1)
     {
         eReg |= 0x80;
@@ -458,7 +458,7 @@ void a::OpxCB1C()
 {
     cycles = 2;
         
-    hReg >> 1;
+    hReg >>= 1;
     if (GetFlag(C) == 1)
     {
         hReg |= 0x80;
@@ -473,7 +473,7 @@ void a::OpxCB1D()
 {
     cycles = 2;
         
-    lReg >> 1;
+    lReg >>= 1;
     if (GetFlag(C) == 1)
     {
         lReg |= 0x80;
@@ -491,7 +491,7 @@ void a::OpxCB1E()
     uint16_t HL = ((hReg << 8) | lReg);
     uint8_t data = read(HL);
     
-    data >> 1;
+    data >>= 1;
     if (GetFlag(C) == 1)
     {
         data |= 0x80;
@@ -507,7 +507,7 @@ void a::OpxCB1F()
 {
     cycles = 2;
         
-    aReg >> 1;
+    aReg >>= 1;
     if (GetFlag(C) == 1)
     {
         aReg |= 0x80;
@@ -524,7 +524,7 @@ void a::OpxCB20()
     
     SetFlag(C, (bReg & 0x80) == 1);
 
-    bReg << 1;
+    bReg <<= 1;
 
     SetFlag(Z, bReg == 0);
     SetFlag(N, false);
@@ -536,7 +536,7 @@ void a::OpxCB21()
     
     SetFlag(C, (cReg & 0x80) == 1);
 
-    cReg << 1;
+    cReg <<= 1;
 
     SetFlag(Z, cReg == 0);
     SetFlag(N, false);
@@ -548,7 +548,7 @@ void a::OpxCB22()
     
     SetFlag(C, (dReg & 0x80) == 1);
 
-    dReg << 1;
+    dReg <<= 1;
 
     SetFlag(Z, dReg == 0);
     SetFlag(N, false);
@@ -560,7 +560,7 @@ void a::OpxCB23()
     
     SetFlag(C, (eReg & 0x80) == 1);
 
-    eReg << 1;
+    eReg <<= 1;
 
     SetFlag(Z, eReg == 0);
     SetFlag(N, false);
@@ -572,7 +572,7 @@ void a::OpxCB24()
     
     SetFlag(C, (hReg & 0x80) == 1);
 
-    hReg << 1;
+    hReg <<= 1;
 
     SetFlag(Z, hReg == 0);
     SetFlag(N, false);
@@ -584,7 +584,7 @@ void a::OpxCB25()
     
     SetFlag(C, (lReg & 0x80) == 1);
 
-    lReg << 1;
+    lReg <<= 1;
 
     SetFlag(Z, lReg == 0);
     SetFlag(N, false);
@@ -599,7 +599,7 @@ void a::OpxCB26()
 
     SetFlag(C, (data & 0x80) == 1);
 
-    data << 1;
+    data <<= 1;
     write(HL, data);
 
     SetFlag(Z, data == 0);
@@ -612,7 +612,7 @@ void a::OpxCB27()
     
     SetFlag(C, (aReg & 0x80) == 1);
 
-    aReg << 1;
+    aReg <<= 1;
 
     SetFlag(Z, aReg == 0);
     SetFlag(N, false);
@@ -624,7 +624,7 @@ void a::OpxCB28()
     uint8_t msb = (bReg & 0x80);
     SetFlag(C, (bReg & 0x01) == 1);
 
-    bReg >> 1;
+    bReg >>= 1;
     bReg |= msb;
 
     SetFlag(Z, bReg == 0);
@@ -637,7 +637,7 @@ void a::OpxCB29()
     uint8_t msb = (cReg & 0x80);
     SetFlag(C, (cReg & 0x01) == 1);
 
-    cReg >> 1;
+    cReg >>= 1;
     cReg |= msb;
 
     SetFlag(Z, cReg == 0);
@@ -650,7 +650,7 @@ void a::OpxCB2A()
     uint8_t msb = (dReg & 0x80);
     SetFlag(C, (dReg & 0x01) == 1);
 
-    dReg >> 1;
+    dReg >>= 1;
     dReg |= msb;
 
     SetFlag(Z, dReg == 0);
@@ -663,7 +663,7 @@ void a::OpxCB2B()
     uint8_t msb = (eReg & 0x80);
     SetFlag(C, (eReg & 0x01) == 1);
 
-    eReg >> 1;
+    eReg >>= 1;
     eReg |= msb;
 
     SetFlag(Z, eReg == 0);
@@ -676,7 +676,7 @@ void a::OpxCB2C()
     uint8_t msb = (hReg & 0x80);
     SetFlag(C, (hReg & 0x01) == 1);
 
-    hReg >> 1;
+    hReg >>= 1;
     hReg |= msb;
 
     SetFlag(Z, hReg == 0);
@@ -689,7 +689,7 @@ void a::OpxCB2D()
     uint8_t msb = (lReg & 0x80);
     SetFlag(C, (lReg & 0x01) == 1);
 
-    lReg >> 1;
+    lReg >>= 1;
     lReg |= msb;
 
     SetFlag(Z, lReg == 0);
@@ -706,7 +706,7 @@ void a::OpxCB2E()
 
     SetFlag(C, (data & 0x01) == 1);
 
-    data >> 1;
+    data >>= 1;
     data |= msb;
     write(HL, data);
 
@@ -721,7 +721,7 @@ void a::OpxCB2F()
 
     SetFlag(C, (aReg & 0x01) == 1);
 
-    aReg >> 1;
+    aReg >>= 1;
     aReg |= msb;
 
     SetFlag(Z, aReg == 0);
@@ -867,7 +867,7 @@ void a::OpxCB38()
 
     SetFlag(C, (bReg & 0x01) == 1);
 
-    bReg >> 1;
+    bReg >>= 1;
 
     SetFlag(Z, bReg == 0);
     SetFlag(N, false);
@@ -879,7 +879,7 @@ void a::OpxCB39()
 
     SetFlag(C, (cReg & 0x01) == 1);
 
-    cReg >> 1;
+    cReg >>= 1;
 
     SetFlag(Z, cReg == 0);
     SetFlag(N, false);
@@ -891,7 +891,7 @@ void a::OpxCB3A()
 
     SetFlag(C, (dReg & 0x01) == 1);
 
-    dReg >> 1;
+    dReg >>= 1;
 
     SetFlag(Z, dReg == 0);
     SetFlag(N, false);
@@ -903,7 +903,7 @@ void a::OpxCB3B()
 
     SetFlag(C, (eReg & 0x01) == 1);
 
-    eReg >> 1;
+    eReg >>= 1;
 
     SetFlag(Z, eReg == 0);
     SetFlag(N, false);
@@ -915,7 +915,7 @@ void a::OpxCB3C()
 
     SetFlag(C, (hReg & 0x01) == 1);
 
-    hReg >> 1;
+    hReg >>= 1;
 
     SetFlag(Z, hReg == 0);
     SetFlag(N, false);
@@ -927,7 +927,7 @@ void a::OpxCB3D()
 
     SetFlag(C, (lReg & 0x01) == 1);
 
-    lReg >> 1;
+    lReg >>= 1;
 
     SetFlag(Z, lReg == 0);
     SetFlag(N, false);
@@ -942,7 +942,7 @@ void a::OpxCB3E()
 
     SetFlag(C, (data & 0x01) == 1);
     
-    data >> 1;
+    data >>= 1;
     write(HL, data);
 
     SetFlag(Z, data == 0);
@@ -955,7 +955,7 @@ void a::OpxCB3F()
     
     SetFlag(C, (aReg & 0x01) == 1);
     
-    aReg >> 1;
+    aReg >>= 1;
 
     SetFlag(Z, aReg == 0);
     SetFlag(N, false);

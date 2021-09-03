@@ -9,6 +9,7 @@ add_executable(gameboy
     src/gameboy.cpp
     src/bus.cpp
     src/cbOpcodes.cpp
+    src/cartridge.cpp
 )
 
 target_compile_options(gameboy PRIVATE -Wall)

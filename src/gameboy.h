@@ -162,9 +162,8 @@ class Z80g
     
     uint16_t Opcode;
     uint8_t cycles;
+    bool Stop = false;
     
-    uint64_t display[160 * 144]{0};
-
     void nullop(){};
 
     enum FLAGS : uint8_t
@@ -182,6 +181,8 @@ class Z80g
     Z80g();
 
     void Clock();
+    void ResetCpu();
+
     void AssignFunctionPointers();
     void connectBus(Bus *p){bus = p;}
     

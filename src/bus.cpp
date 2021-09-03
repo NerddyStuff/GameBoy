@@ -3,11 +3,12 @@
 
 Bus::Bus()
 {
-    for(uint8_t i = 0; i < 65536; i++)
+    for(auto i : AddressBus)
     {
-        Addresses[i] = 0x0;
+        AddressBus[i] = 0x0;
     }
     cpu.connectBus(this);
+    game.connectCartridge(this);
 };
 
 Bus::~Bus()
@@ -18,14 +19,14 @@ Bus::~Bus()
 void Bus::write(uint16_t addr, uint8_t data)
 {
     if (addr >= 0x0000 && addr <= 0xFFFF)
-        Addresses[addr] = data;
+        AddressBus[addr] = data;
 
 }
 
 uint8_t Bus::read(uint16_t addr)
 {
     if (addr >= 0x0000 && addr <= 0xFFFF)
-        return Addresses[addr];
+        return AddressBus[addr];
 
     return 0x00;
 }

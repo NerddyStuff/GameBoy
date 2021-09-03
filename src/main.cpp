@@ -1,26 +1,19 @@
-#include <SDL2/SDL.h>
 #include "bus.h"
 #include "gameboy.h"
+#include "cartridge.h"
 
-int main(int argc, char** args)
+int main(int argc, char* argv[])
 {
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
+    Bus GameBoy;
+
+    const char* filename = argv[2];
+    GameBoy.game.LoadRom(filename);
+
+    bool quit = false;
+    while (!quit)
     {
-        switch (event.type)
-        {
-        case SDLK_w:
-            
-            break;
-        
-        default:
-            break;
-        }
+        GameBoy.cpu.Clock();
     }
-    
-
-    
-
     
     return 0;
     

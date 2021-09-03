@@ -8,8 +8,22 @@ Z80g::Z80g()
 {   
     sp = 0xFFFE;
     pc = 0x100;
-    Opcode = 0;    
-    write(0xFF00, 0x3F);
+    Opcode = 0;
+
+    aReg = 0x00;    //  Resets all the registers
+    bReg = 0x00;    //
+    cReg = 0x00;    //
+    dReg = 0x00;    //
+    eReg = 0x00;    //
+    hReg = 0x00;    //
+    lReg = 0x00;    //
+
+    SetFlag(Z, false);  //  Resets the flags
+    SetFlag(N, false);  //
+    SetFlag(H, false);  //
+    SetFlag(C, false);  //
+    
+    write(0xFF00, 0x3F);    // Resets the button registers
 
     table[0x00] = {&Z80g::Opx00};   table[0x10] = {&Z80g::Opx10};   table[0x20] = {&Z80g::Opx20};   table[0x30] = {&Z80g::Opx30};   table[0x40] = {&Z80g::Opx40};   table[0x50] = {&Z80g::Opx50};   table[0x60] = {&Z80g::Opx60};   table[0x70] = {&Z80g::Opx70};
     table[0x01] = {&Z80g::Opx01};   table[0x11] = {&Z80g::Opx11};   table[0x21] = {&Z80g::Opx21};   table[0x31] = {&Z80g::Opx31};   table[0x41] = {&Z80g::Opx41};   table[0x51] = {&Z80g::Opx51};   table[0x61] = {&Z80g::Opx61};   table[0x71] = {&Z80g::Opx71};
@@ -111,6 +125,7 @@ void Z80g::SetFlag(FLAGS f, bool v)
 
 }
 
+
 void Z80g::Clock()
 {
     if(cycles == 0)
@@ -119,7 +134,7 @@ void Z80g::Clock()
         
         if (Opcode == 0xCB)
         {
-            Opcode << 8;
+            Opcode <<= 8;
             pc++;
             Opcode |= read(pc);
             pc++;
@@ -138,7 +153,44 @@ void Z80g::Clock()
     cycles--;
 }   
 
+void Z80g::ResetCpu()
+{
+    sp = 0xFFFE;
+    pc = 0x100;
+    Opcode = 0;
 
+    aReg = 0x00;
+    bReg = 0x00;
+    cReg = 0x00;
+    dReg = 0x00;
+    eReg = 0x00;
+    hReg = 0x00;
+    lReg = 0x00;
+
+    SetFlag(Z, false);
+    SetFlag(N, false);
+    SetFlag(H, false);
+    SetFlag(C, false);
+
+    write(0xFF00, 0x3F);
+}
+
+void Z80g::Opx10()
+{
+    cycles = 1;
+
+    uint8_t InterruptEnable;
+    uint8_t Input;
+    
+    Input = read(0xFF00);
+    InterruptEnable = read(0xFFFF);
+    
+    if ((InterruptEnable & 0x1F) == 0x0 && (Input & 0x0F) == 0)
+    {
+        Stop = true;
+    }
+    
+}
 
 void Z80g::Opx40()
 {
@@ -969,17 +1021,16 @@ void Z80g::Opx29()
     cycles = 2;
 
     uint16_t HL = ((hReg << 8) | lReg);
-    uint16_t HL = ((hReg << 8) | lReg);
+    uint16_t HL2 = ((hReg << 8) | lReg);
 
-    SetFlag(C,(HL += HL) > 0xFFFF);
+    SetFlag(C,(HL += HL2) > 0xFFFF);
 
-    HL += HL;
+    HL += HL2;
     hReg = (HL & 0xFF00);
     lReg = (HL & 0x00FF);
 
     SetFlag(N, false);
     SetFlag(H, (HL & 0x1000) == 0x1000);
-
 
 }
 void Z80g::Opx39()
@@ -1001,8 +1052,8 @@ void Z80g::Opx39()
 void Z80g::Opx07()
 {
     cycles = 1;
-    uint16_t aRegShift = aReg << 1;
-    aReg << 1;
+    uint16_t aRegShift = aReg <<= 1;
+    aReg <<= 1;
     
     if ((aRegShift & 0x0100) == 0x0100)
     {
@@ -1018,7 +1069,7 @@ void Z80g::Opx17()
 {
     cycles = 1;
 
-    aReg << 1;
+    aReg <<= 1;
 
     aReg |= (GetFlag(C) >> 4);
 
@@ -1031,14 +1082,14 @@ void Z80g::Opx0F()
     cycles = 1;
     if ((aReg & 0x01) == 1)
     {
-        aReg >> 1;
+        aReg >>= 1;
         SetFlag(C, true);
         aReg |= 0x80;
     }
     
     else
     {
-        aReg >> 1;
+        aReg >>= 1;
         SetFlag(C, false);
     }
 
@@ -1050,7 +1101,7 @@ void Z80g::Opx1F()
 {
     cycles = 1;
 
-    aReg >> 1;
+    aReg >>= 1;
     aReg |= (GetFlag(C) << 3);
 
     SetFlag(Z, false);
@@ -1068,7 +1119,7 @@ void Z80g::Opx37()
 void Z80g::Opx2F()
 {
     cycles = 1;
-    ~aReg;
+    aReg = ~aReg;
 
     SetFlag(N, true);
     SetFlag(H, true);
@@ -1077,8 +1128,16 @@ void Z80g::Opx2F()
 void Z80g::Opx3F()
 {
     cycles = 1;
-
-    SetFlag(C, ~C);
+    if (GetFlag(C))
+    {
+        SetFlag(C, false);
+    }
+    
+    else
+    {
+        SetFlag(C, true);
+    }
+    
     SetFlag(N, false);    
     SetFlag(H, false);        
 }
@@ -1369,7 +1428,7 @@ void Z80g::Opx97()
     cycles = 1;
     
     SetFlag(C, (aReg -= aReg) < 0x00);
-    SetFlag(H, (((aReg & 0xF) - (aReg & 0xF)) & 0x10) == 0x10);
+    SetFlag(H, ((((aReg & 0xF) - (aReg & 0xF)) & 0x10) == 0x10));
 
     aReg -= aReg;
 
@@ -1911,7 +1970,8 @@ void Z80g::OpxE8()
     cycles = 4;
 
     int8_t r8 = read(pc);
-    ~r8 + 1;
+
+    r8 = (~r8 + 1);    
     
     SetFlag(C, (sp + r8) > 0xFF);
     
@@ -2513,9 +2573,9 @@ void Z80g::OpxCD()
     write(sp, lo);
 
     pc++;
-    uint8_t lo = read(pc);
+    lo = read(pc);
     pc++;
-    uint8_t hi = read(pc);
+    hi = read(pc);
 
     uint16_t a16 = (hi << 4) | lo;
     pc = a16;
@@ -2538,9 +2598,9 @@ void Z80g::OpxCC()
         write(sp, lo);
 
         pc++;
-        uint8_t lo = read(pc);
+        lo = read(pc);
         pc++;
-        uint8_t hi = read(pc);
+        hi = read(pc);
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2564,9 +2624,9 @@ void Z80g::OpxDC()
         write(sp, lo);
 
         pc++;
-        uint8_t lo = read(pc);
+        lo = read(pc);
         pc++;
-        uint8_t hi = read(pc);
+        hi = read(pc);
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2590,9 +2650,9 @@ void Z80g::OpxC4()
         write(sp, lo);
 
         pc++;
-        uint8_t lo = read(pc);
+        lo = read(pc);
         pc++;
-        uint8_t hi = read(pc);
+        hi = read(pc);
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2616,9 +2676,9 @@ void Z80g::OpxD4()
         write(sp, lo);
 
         pc++;
-        uint8_t lo = read(pc);
+        lo = read(pc);
         pc++;
-        uint8_t hi = read(pc);
+        hi = read(pc);
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
