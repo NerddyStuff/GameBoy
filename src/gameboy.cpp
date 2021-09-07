@@ -6,24 +6,6 @@
 
 Z80g::Z80g()
 {   
-    sp = 0xFFFE;
-    pc = 0x100;
-    Opcode = 0;
-
-    aReg = 0x00;    //  Resets all the registers
-    bReg = 0x00;    //
-    cReg = 0x00;    //
-    dReg = 0x00;    //
-    eReg = 0x00;    //
-    hReg = 0x00;    //
-    lReg = 0x00;    //
-
-    SetFlag(Z, false);  //  Resets the flags
-    SetFlag(N, false);  //
-    SetFlag(H, false);  //
-    SetFlag(C, false);  //
-    
-    write(0xFF00, 0x3F);    // Resets the button registers
 
     table[0x00] = {&Z80g::Opx00};   table[0x10] = {&Z80g::Opx10};   table[0x20] = {&Z80g::Opx20};   table[0x30] = {&Z80g::Opx30};   table[0x40] = {&Z80g::Opx40};   table[0x50] = {&Z80g::Opx50};   table[0x60] = {&Z80g::Opx60};   table[0x70] = {&Z80g::Opx70};
     table[0x01] = {&Z80g::Opx01};   table[0x11] = {&Z80g::Opx11};   table[0x21] = {&Z80g::Opx21};   table[0x31] = {&Z80g::Opx31};   table[0x41] = {&Z80g::Opx41};   table[0x51] = {&Z80g::Opx51};   table[0x61] = {&Z80g::Opx61};   table[0x71] = {&Z80g::Opx71};
@@ -96,14 +78,14 @@ Z80g::Z80g()
     tableCB[0x8F] = {&Z80g::OpxCB8F};   tableCB[0x9F] = {&Z80g::OpxCB9F};   tableCB[0xAF] = {&Z80g::OpxCBAF};   tableCB[0xBF] = {&Z80g::OpxCBBF};   tableCB[0xCF] = {&Z80g::OpxCBCF};   tableCB[0xDF] = {&Z80g::OpxCBDF};   tableCB[0xEF] = {&Z80g::OpxCBEF};   tableCB[0xFF] = {&Z80g::OpxCBFF};
 }
 
-void Z80g::write(uint16_t ad, uint8_t da)
+void Z80g::write(uint16_t addr, uint8_t data)
 {
-    bus->write(ad, da);
+    bus->write(addr, data);
 }
 
-uint8_t Z80g::read(uint16_t ad)
+uint8_t Z80g::read(uint16_t addr)
 {
-    return bus->read(ad);
+    return bus->read(addr);
 }
 
 uint8_t Z80g::GetFlag(FLAGS f)
@@ -150,7 +132,11 @@ void Z80g::Clock()
         }
     }
 
-    cycles--;
+    while (cycles > 0)
+    {
+        cycles--;
+    }
+    
 }   
 
 void Z80g::ResetCpu()
@@ -2475,10 +2461,10 @@ void Z80g::OpxC3()
 {
     cycles = 4;
     
-    pc++;
     uint8_t lo = read(pc);
     pc++;
     uint8_t hi = read(pc);
+    pc++;
 
     uint16_t a16 = (hi << 4) | lo;
 
@@ -2492,10 +2478,10 @@ void Z80g::OpxC2()
     {
         cycles = 4;
         
-        pc++;
         uint8_t lo = read(pc);
         pc++;
         uint8_t hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
 
@@ -2511,10 +2497,10 @@ void Z80g::OpxD2()
     {
         cycles = 4;
         
-        pc++;
         uint8_t lo = read(pc);
         pc++;
         uint8_t hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
 
@@ -2530,10 +2516,10 @@ void Z80g::OpxCA()
     {
         cycles = 4;
         
-        pc++;
         uint8_t lo = read(pc);
         pc++;
         uint8_t hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
 
@@ -2549,10 +2535,10 @@ void Z80g::OpxDA()
     {
         cycles = 4;
         
-        pc++;
         uint8_t lo = read(pc);
         pc++;
         uint8_t hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
 
@@ -2572,10 +2558,10 @@ void Z80g::OpxCD()
     --sp;
     write(sp, lo);
 
-    pc++;
     lo = read(pc);
     pc++;
     hi = read(pc);
+    pc++;
 
     uint16_t a16 = (hi << 4) | lo;
     pc = a16;
@@ -2597,10 +2583,10 @@ void Z80g::OpxCC()
         --sp;
         write(sp, lo);
 
-        pc++;
         lo = read(pc);
         pc++;
         hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2623,10 +2609,10 @@ void Z80g::OpxDC()
         --sp;
         write(sp, lo);
 
-        pc++;
         lo = read(pc);
         pc++;
         hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2649,10 +2635,10 @@ void Z80g::OpxC4()
         --sp;
         write(sp, lo);
 
-        pc++;
         lo = read(pc);
         pc++;
         hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
@@ -2675,10 +2661,10 @@ void Z80g::OpxD4()
         --sp;
         write(sp, lo);
 
-        pc++;
         lo = read(pc);
         pc++;
         hi = read(pc);
+        pc++;
 
         uint16_t a16 = (hi << 4) | lo;
         pc = a16;
