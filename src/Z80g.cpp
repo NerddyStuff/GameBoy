@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "gameboy.h"
+#include "Z80g.h"
 #include "bus.h"
 
 

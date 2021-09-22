@@ -1,21 +1,19 @@
 #pragma once
 
 #include "cartridge.h"
-#include "gameboy.h"
+#include "Z80g.h"
 #include <array>
+#include <memory>
 
 class Bus
 {
-
     public:
 
         Bus();
         ~Bus();
         
-    public:
-
         Z80g cpu;
-        Cartridge game;
+        std::shared_ptr<Cartridge> cart;
         
         std::array<uint8_t, 64 * 1024> AddressBus;        
 
@@ -23,6 +21,9 @@ class Bus
         void write(uint16_t addr, uint8_t data);
         uint8_t read(uint16_t addr);
 
+        void InsertGame(std::shared_ptr<Cartridge> &Cartridge);
+        void BusClock();
+        void Reset();
 
 };
 

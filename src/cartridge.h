@@ -1,27 +1,25 @@
 #pragma once
 #include <cstdint>
 #include <fstream>
+#include <vector>
 #include <memory>
 
-
-class Bus;
+#include "NoMBC.h"
 
 class Cartridge
 {
     public:
     
-    Cartridge();
+    Cartridge(const std::string Filename);
     ~Cartridge();
     
-    Bus *bus = nullptr;
+    std::vector<uint8_t> m_Ram;   
+    std::unique_ptr<uint8_t> m_Rom;
+    std::unique_ptr<MBC_Base> m_MemoryController;
 
-    uint8_t m_header;
+    uint8_t MBCType;
 
-    
-    
-    
-    
-    void LoadRom(char const* filename);
-    void connectCartridge(Bus *p){bus = p;}
+    bool c_Read(uint16_t addr, uint8_t &data);
+    bool c_Write(uint16_t addr, uint8_t data);
 
 };
