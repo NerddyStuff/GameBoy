@@ -25,11 +25,11 @@ Cartridge::Cartridge(const std::string FileName)
 	if (file.is_open())
 	{
 		size = file.tellg();
-		int32_t mSize = size;
+		uint32_t mSize = size;
 
 		file.seekg(0, std::ios::beg);
 		
-		m_Rom = std::unique_ptr<uint8_t>(new uint8_t [static_cast<unsigned int>(mSize)]);
+		m_Rom = std::make_unique<uint8_t[]>(static_cast<size_t>(mSize));
 
 		file.read(reinterpret_cast<char*>(m_Rom.get()), mSize);
 
@@ -48,11 +48,11 @@ Cartridge::Cartridge(const std::string FileName)
 		switch (MBCType)
 		{
 		case ROMONLY:
-			m_MemoryController = std::unique_ptr<NoMBC>(new NoMBC());
+			m_MemoryController = std::make_unique<NoMBC>();
 			break;
 		
 		default:
-			m_MemoryController = std::unique_ptr<NoMBC>(new NoMBC());
+			m_MemoryController = std::make_unique<NoMBC>();
 			break;
 		}
 	}

@@ -3,9 +3,10 @@
 
 Bus::Bus()
 {
-    cpu.connectBus(this);
+    m_Cpu.connectBus(this);
+    m_Timer.connectTimer(this);
     
-    for(auto &i : AddressBus) i = 0x00;
+    for(auto &i : WRAM) i = 0x00;
 };
 
 Bus::~Bus()
@@ -21,19 +22,22 @@ void Bus::write(uint16_t addr, uint8_t data)
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF)
     {
-        /* code */
+        uint16_t mAddr = addr & 0x1FFF;
+        VRAM[mAddr] = data;
     }
     else if (addr >= 0xA000 && addr <= 0xBFFF)
     {
-        /* code */
+        cart.get()->m_Ram[addr] = data;
     }
-    else if (addr >= 0xC000 && addr <= 0xCFFF)  //WRAM
+    else if ((addr >= 0xC000 && addr <= 0xCFFF) || (addr >= 0xE000 && addr <= 0xFDFF))  //WRAM
     {
-        /* code */
+        uint16_t mAddr = addr & 0x0FFF;
+        WRAM[mAddr] = data;
     }
     else if (addr >= 0xFE00 && addr <= 0xFE9F)
     {
-        /* code */
+        uint16_t mAddr = addr & 0x00FF;
+        OAM[mAddr] = data;
     }
     else if (addr >= 0xFF00 && addr <= 0xFF7F)
     {
@@ -45,36 +49,37 @@ void Bus::write(uint16_t addr, uint8_t data)
     }
     else if (addr == 0xFFFF)
     {
-        /* code */
+        m_Cpu.m_EnableInt = data;
     }
-    
-    
     
 }
 
 uint8_t Bus::read(uint16_t addr)
 {
-    uint8_t byte = 0x00;
+    uint8_t data = 0x00;
 
-    if (cart.get()->c_Read(addr, byte))
+    if (cart.get()->c_Read(addr, data))
     {    
         
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF)
     {
-        
+        uint16_t mAddr = addr & 0x1FFF;
+        data = VRAM[mAddr];
     }
     else if (addr >= 0xA000 && addr <= 0xBFFF)
     {
-        
+        data = cart.get()->m_Ram[addr];
     }
-    else if (addr >= 0xC000 && addr <= 0xCFFF)  //WRAM
+    else if ((addr >= 0xC000 && addr <= 0xCFFF) || (addr >= 0xE000 && addr <= 0xFDFF))  //WRAM
     {
-        
+        uint16_t mAddr = addr & 0x0FFF;
+        data = WRAM[mAddr];
     }
     else if (addr >= 0xFE00 && addr <= 0xFE9F)
     {
-        
+        uint16_t mAddr = addr & 0x00FF;
+        data = OAM[mAddr];
     }
     else if (addr >= 0xFF00 && addr <= 0xFF7F)
     {
@@ -86,22 +91,23 @@ uint8_t Bus::read(uint16_t addr)
     }
     else if (addr == 0xFFFF)
     {
-        
+        data = m_Cpu.m_EnableInt;
     }
     
-    return byte;
+    return data;
 }
 
 void  Bus::InsertGame(std::shared_ptr<Cartridge> &Cartridge)
 {
     this->cart = Cartridge;
 }
-
 void Bus::BusClock()
 {
-    cpu.Clock();
+    m_Cpu.Clock();
+    m_Timer.DivTick();
+    m_Timer.TimaTick();
 }
-void Bus::Reset()
+void Bus::BusReset()
 {
-    cpu.ResetCpu();
+    m_Cpu.ResetCpu();
 }

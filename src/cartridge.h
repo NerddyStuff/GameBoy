@@ -14,7 +14,7 @@ class Cartridge
     ~Cartridge();
     
     std::vector<uint8_t> m_Ram;   
-    std::unique_ptr<uint8_t> m_Rom;
+    std::unique_ptr<uint8_t[]> m_Rom;
     std::unique_ptr<MBC_Base> m_MemoryController;
 
     uint8_t MBCType;

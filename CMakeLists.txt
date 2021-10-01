@@ -6,10 +6,12 @@ find_package(SDL2 REQUIRED)
 
 add_executable(gameboy
     src/main.cpp
-    src/gameboy.cpp
+    src/Z80g.cpp
     src/bus.cpp
     src/cbOpcodes.cpp
     src/cartridge.cpp
+    src/NoMBC.cpp
+    src/MBC.cpp
 )
 
 target_compile_options(gameboy PRIVATE -Wall)

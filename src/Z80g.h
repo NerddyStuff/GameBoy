@@ -6,9 +6,13 @@ class Bus;
 
 class Z80g
 {
+    public:
+    
+        Z80g();
+        
     private:
     
-    Bus *bus = nullptr;
+        Bus *bus = nullptr;
 
     void Opx00();   void Opx01();   void Opx02();    void Opx03();    
     void Opx10();   void Opx11();   void Opx12();    void Opx13();
@@ -78,6 +82,7 @@ class Z80g
                                     void OpxEE();   void OpxEF();   
                                     void OpxFE();   void OpxFF();
 
+    void nullop(){};
 
     // CB Opcodes
     void OpxCB00();   void OpxCB01();   void OpxCB02();   void OpxCB03();
@@ -159,12 +164,14 @@ class Z80g
     uint8_t hReg, lReg{};   //Can be used as 2 8-bit registers or combine them to make a 16-bit register used to point at memory locations
     uint16_t sp{};          //Stack Pointer
     uint16_t pc{};          //Program Counter
+    uint16_t Opcode{};
     
-    uint16_t Opcode;
-    uint8_t cycles;
+    uint8_t cycles{};
+    uint8_t m_EnableInt{};
+    uint16_t m_CurrentCycles{};
+
     bool Stop = false;
     
-    void nullop(){};
 
     enum FLAGS : uint8_t
     {
@@ -178,19 +185,19 @@ class Z80g
     void    SetFlag(FLAGS f, bool v);
     
 
-    Z80g();
 
     void Clock();
     void ResetCpu();
 
-    void AssignFunctionPointers();
-    void connectBus(Bus *p){bus = p;}
     
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t data);
 
-    typedef void(Z80g::*FunctionPointers)(void);
 
+    typedef void(Z80g::*FunctionPointers)(void);
     FunctionPointers table[0xFF + 1]{&Z80g::nullop};
     FunctionPointers tableCB[0xFF +1]{&Z80g::nullop};
+    
+    
+    void connectBus(Bus *p){bus = p;}
 };
