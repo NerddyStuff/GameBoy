@@ -27,7 +27,7 @@ void Timer::TimaTick()
 {
     uint8_t SpeedCheck = (m_TacRegister & 0x0F);
 
-    if (TimerCheck())
+    if (TimerCheck())   //  Timer enabled check
     {
         if (m_Speed != SpeedCheck)
         {
@@ -59,7 +59,9 @@ void Timer::TimaTick()
             if (m_TimaRegister >= 255)
             {
                 m_TimaRegister = m_TmaRegister;
+
                 // Request interrupt
+                busp->write(IF, 0x04);
             }
         }
     }
@@ -102,7 +104,7 @@ void Timer::t_Write(uint16_t addr, uint8_t data)
         m_TacRegister = data;
         break;
     default:
-
+        printf("nothing to write at! (timer)");
         break;
     }
 }

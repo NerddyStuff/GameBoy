@@ -117,14 +117,17 @@ void Z80g::Clock()
 
             (this->*(tableCB[Opcode & 0xFF]))();
             pc++;
+            ServiceInterrupts();
         }
 
         else
         {
             (this->*(table[Opcode & 0xFF]))();
             pc++;
+            ServiceInterrupts();
         }
     }
+    
     m_CurrentCycles += cycles;
     cycles--;
 }
@@ -135,34 +138,86 @@ void Z80g::ResetCpu()
     pc = 0x100;
     Opcode = 0;
 
-    aReg = 0x00;
+    aReg = 0x01;
     bReg = 0x00;
-    cReg = 0x00;
+    cReg = 0x13;
     dReg = 0x00;
-    eReg = 0x00;
-    hReg = 0x00;
-    lReg = 0x00;
+    eReg = 0xD8;
+    hReg = 0x01;
+    lReg = 0x4D;
+    fReg = 0xB0;
 
     SetFlag(Z, false);
     SetFlag(N, false);
     SetFlag(H, false);
     SetFlag(C, false);
 }
-
-void Z80g::Opx10()
+void Z80g::ServiceInterrupts()
 {
-    cycles = 1;
-
-    uint8_t InterruptEnable;
-    uint8_t Input;
-
-    Input = read(0xFF00);
-    InterruptEnable = read(0xFFFF);
-
-    if ((InterruptEnable & 0x1F) == 0x0 && (Input & 0x0F) == 0)
+    if (bus->m_IMEFlag)
     {
-        Stop = true;
+        if (bus->m_IEFlag != 0)
+        {
+            for (uint8_t i = 1; i <= 17; i = i*2)
+            {
+                uint8_t IRFlag = read(0xFF0F);
+
+                if (((bus->m_IEFlag & i) == 1) && (IRFlag & i) == 1)
+                {
+                    //  Call apropirate interrupt here
+                    switch (i)
+                    {
+                    case 1:
+                        //  Call VBlanc interrupt
+                        write(sp, (pc & 0xFF00));
+                        sp--;
+                        write(sp, (pc & 0x00FF));
+                        pc = 0x0040;
+                        break;
+                    case 2:
+                        //  Call LCD interrupt
+                        write(sp, (pc & 0xFF00));
+                        sp--;
+                        write(sp, (pc & 0x00FF));
+                        pc = 0x0048;
+                        break;
+                    case 4:
+                        //  Call Timer interrupt
+                        write(sp, (pc & 0xFF00));
+                        sp--;
+                        write(sp, (pc & 0x00FF));
+                        pc = 0x0050;
+                        break;
+                    case 8:
+                        //  Call Serial interrupt
+                        write(sp, (pc & 0xFF00));
+                        sp--;
+                        write(sp, (pc & 0x00FF));
+                        pc = 0x0058;
+                        break;
+                    case 16:
+                        //  Call Joypad interrupt
+                        write(sp, (pc & 0xFF00));
+                        sp--;
+                        write(sp, (pc & 0x00FF));
+                        pc = 0x0060;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                
+            }
+            
+        }
+        
     }
+    
+}
+
+void Z80g::Opx10()  //  Stop instruction
+{
+    
 }
 
 void Z80g::Opx40()
@@ -2139,13 +2194,13 @@ void Z80g::OpxF3() // Disable interrupts
 {
     cycles = 1;
 
-    write(0xFFFF, 0x00);
+    bus->m_IMEFlag = false;
 }
 void Z80g::OpxFB() // Enable interrupts
 {
     cycles = 1;
 
-    write(0xFFFF, 0x1F);
+    bus->m_IMEFlag = true;
 }
 void Z80g::Opx27()
 {

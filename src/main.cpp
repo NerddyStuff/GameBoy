@@ -13,8 +13,6 @@ int main(int argc, char* argv[])
     cart = std::make_shared<Cartridge>(filename);
     GameBoy.InsertGame(cart);
     
-    GameBoy.Reset();
-
 
     while (!quit)
     {

@@ -12,6 +12,8 @@ add_executable(gameboy
     src/cartridge.cpp
     src/NoMBC.cpp
     src/MBC.cpp
+    src/Timer.cpp
+    
 )
 
 target_compile_options(gameboy PRIVATE -Wall)
