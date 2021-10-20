@@ -13,6 +13,7 @@ add_executable(gameboy
     src/NoMBC.cpp
     src/MBC.cpp
     src/Timer.cpp
+    src/LCD.cpp
     
 )
 

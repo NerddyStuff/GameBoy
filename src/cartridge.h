@@ -13,11 +13,12 @@ class Cartridge
     Cartridge(const std::string Filename);
     ~Cartridge();
     
-    std::vector<uint8_t> m_Ram;   
+    std::unique_ptr<uint8_t[]> m_Ram;   
     std::unique_ptr<uint8_t[]> m_Rom;
     std::unique_ptr<MBC_Base> m_MemoryController;
 
-    uint8_t MBCType;
+    
+    
 
     bool c_Read(uint16_t addr, uint8_t &data);
     bool c_Write(uint16_t addr, uint8_t data);

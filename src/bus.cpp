@@ -4,6 +4,8 @@ Bus::Bus()
 {
     m_Cpu.connectBus(this);
     m_Timer.connectTimer(this);
+    m_Screen.connectScreen(this);
+
 
     m_InputStatus = 0xCF;
 
@@ -48,15 +50,16 @@ void Bus::write(uint16_t addr, uint8_t data)
     else if (addr >= 0x8000 && addr <= 0x9FFF)
     {
         uint16_t mAddr = addr & 0x1FFF;
-        a_VRAM[mAddr] = data;
+        m_Screen.m_VRAM.get()[mAddr] = data;
     }
     else if (addr >= 0xA000 && addr <= 0xBFFF)
     {
-        cart.get()->m_Ram[addr] = data;
+        uint16_t mAddr = addr & 0x1FFF;
+        cart.get()->m_Ram[mAddr] = data;
     }
-    else if ((addr >= 0xC000 && addr <= 0xCFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //a_WRAM
+    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //a_WRAM
     {
-        uint16_t mAddr = addr & 0x0FFF;
+        uint16_t mAddr = addr & 0x1FFF;
         a_WRAM[mAddr] = data;
     }
     else if (addr >= 0xFE00 && addr <= 0xFE9F)
@@ -94,15 +97,16 @@ uint8_t Bus::read(uint16_t addr)
     else if (addr >= 0x8000 && addr <= 0x9FFF)
     {
         uint16_t mAddr = addr & 0x1FFF;
-        data = a_VRAM[mAddr];
+        data = m_Screen.m_VRAM.get()[mAddr];
     }
     else if (addr >= 0xA000 && addr <= 0xBFFF)
     {
-        data = cart.get()->m_Ram[addr];
+        uint16_t mAddr = addr & 0x1FFF;
+        data = cart.get()->m_Ram[mAddr];
     }
-    else if ((addr >= 0xC000 && addr <= 0xCFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //a_WRAM
+    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //a_WRAM
     {
-        uint16_t mAddr = addr & 0x0FFF;
+        uint16_t mAddr = addr & 0x1FFF;
         data = a_WRAM[mAddr];
     }
     else if (addr >= 0xFE00 && addr <= 0xFE9F)

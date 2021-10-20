@@ -5,6 +5,8 @@
 
 Cartridge::Cartridge(const std::string FileName)
 {
+	uint8_t MBCType;
+	uint8_t RamSize;
 
 	struct gHeader
 	{
@@ -20,18 +22,20 @@ Cartridge::Cartridge(const std::string FileName)
 
 
 	std::streampos size;
-	std::ifstream file(FileName, std::ios::ate | std::ios::binary | std::ios::in);
+	std::ifstream file(FileName, std::ios::in | std::ios::binary | std::ios::ate);
 	
 	if (file.is_open())
 	{
 		size = file.tellg();
-		uint32_t mSize = size;
+		int mSize = size;
 
 		file.seekg(0, std::ios::beg);
 		
 		m_Rom = std::make_unique<uint8_t[]>(static_cast<size_t>(mSize));
+		m_Ram = std::make_unique<uint8_t[]>(static_cast<size_t>(mSize));	//This is not staying like this, further changes will be made
 
-		file.read(reinterpret_cast<char*>(m_Rom.get()), mSize);
+
+		file.read(reinterpret_cast<char*>(m_Rom.get()), size);
 
 		/* header.gTitle = m_Rom[0x0134];
 		header.gCGBFlag = m_Rom[0x0143];
@@ -41,6 +45,7 @@ Cartridge::Cartridge(const std::string FileName)
 		header.gDestination = m_Rom[0x014A]; */
 		
 		MBCType = m_Rom.get()[0x0147];
+		RamSize = m_Rom.get()[0x0149];
 		
 		if (mSize < 0x014F)
 			printf("Rom is smaller than expected");
@@ -58,7 +63,8 @@ Cartridge::Cartridge(const std::string FileName)
 	}
 	else
 	{
-		printf("Could not load ROM file");
+		std::cerr << "Could not load ROM file\n";
+		std::exit(1);
 	}
 	
 	file.close();

@@ -158,12 +158,12 @@ class Z80g
     
 
     // These are all treated as registers
-    uint8_t aReg{0x1}, fReg{0x80};   //A and F registers are treated as 2 8 bit registers, but can be combined.
+    uint8_t aReg{0x1}, fReg{0x0};   //A and F registers are treated as 2 8 bit registers, but can be combined.
     uint8_t bReg{0x0}, cReg{0x13};   //B and C registers are treated exactly as A and F.
     uint8_t dReg{0x0}, eReg{0xD8};   //D and E are exactly the same as BC
     uint8_t hReg{0x1}, lReg{0x4D};   //Can be used as 2 8-bit registers or combine them to make a 16-bit register used to point at memory locations
     uint16_t sp{0xFFFE};             //Stack Pointer
-    uint16_t pc{0x100};              //Program Counter
+    uint16_t pc = 0x100;              //Program Counter
     uint16_t Opcode{};
     
     uint8_t cycles{};

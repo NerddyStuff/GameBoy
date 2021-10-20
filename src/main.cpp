@@ -1,26 +1,80 @@
+#include <SDL2/SDL.h>
+
 #include "bus.h"
 #include "Z80g.h"
 #include "cartridge.h"
 
-bool quit = false;
+SDL_Window* window;
+SDL_Texture* texture;
+SDL_Renderer* renderer;
+SDL_Event e;
+
+Bus GameBoy;
+
+void UpdateGraphics()
+{
+    SDL_UpdateTexture(texture, nullptr, GameBoy.m_Screen.m_VRAM.get(), (sizeof(GameBoy.m_Screen.m_VRAM.get())));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    SDL_RenderPresent(renderer);
+
+}
 
 int main(int argc, char* argv[])
 {
-    Bus GameBoy;
     
+    int scale = 2;
     std::shared_ptr<Cartridge> cart;
     const char* filename = argv[1];
     cart = std::make_shared<Cartridge>(filename);
     GameBoy.InsertGame(cart);
-    
+    GameBoy.BusReset();
 
-    while (!quit)
+    //  Wrap SDL code in a function
+    SDL_Init(SDL_INIT_VIDEO);
+
+    window = SDL_CreateWindow("GameBoy Test Screen", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 160 * scale, 144 * scale, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, 160, 144);
+
+    bool loop = true;
+
+    while (loop)
     {
         
         GameBoy.BusClock();
+        UpdateGraphics();
+        while (SDL_PollEvent(&e))
+        {
+            switch (e.type)
+            {
+            case SDL_KEYDOWN:
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_ESCAPE:
+                    loop = false;
+                    break;
+                
+                default:
+                    break;
+                }
+                break;
+            
+            default:
+                break;
+            }
+        }
         
 
     }
+
+    SDL_DestroyWindow(window);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_Quit();
+    GameBoy.~Bus();
+
+    std::cout << "GameBoy Terminated\n";
     
     return 0;
     
