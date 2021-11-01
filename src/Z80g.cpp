@@ -572,10 +572,20 @@ void Z80g::Clock()
         }
     }
 
-    m_CurrentCycles += 1;
     cycles--;
 }
+void Z80g::DoDmaTransfer(uint16_t addr, uint8_t data)
+{
+    cycles = 156;
 
+    uint16_t FixedAddr = (data << 8);
+    for (size_t i = 0; i < 0xA0; i++)
+    {
+        uint8_t oamdata = read(FixedAddr + i);
+        write(OAM + i, oamdata);
+    }
+    
+}
 void Z80g::ResetCpu()
 {
     sp = 0xFFFE;
@@ -602,13 +612,13 @@ void Z80g::ServiceInterrupts()
 
     if (bus->m_IMEFlag)
     {
-        if (bus->m_IEFlag != 0)
+        if (bus->m_IEFlag.reg != 0)
         {
             for (uint8_t i = 1; i <= 17; i = i * 2)
             {
                 uint8_t IRFlag = read(0xFF0F);
 
-                if (((bus->m_IEFlag & i) == 1) && (IRFlag & i) == 1)
+                if (((bus->m_IEFlag.reg & i) == 1) && (IRFlag & i) == 1)
                 {
                     //  Call apropirate interrupt here
                     switch (i)
@@ -622,7 +632,7 @@ void Z80g::ServiceInterrupts()
                         IRHandled = true;
                         break;
                     case 2:
-                        //  Call LCD interrupt
+                        //  Call STAT interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
@@ -2620,7 +2630,7 @@ void Z80g::OpxF0()
 
     uint16_t a8 = 0xFF00 | read(pc);
     pc++;
-    aReg = read(a8);
+    aReg = bus->read(a8);
 }
 void Z80g::OpxE2()
 {

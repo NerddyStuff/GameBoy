@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.18.4)
-
 project(gameboy)
 
 find_package(SDL2 REQUIRED)

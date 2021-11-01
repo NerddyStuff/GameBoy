@@ -163,11 +163,10 @@ class Z80g
     uint8_t dReg{0x0}, eReg{0xD8};   //D and E are exactly the same as BC
     uint8_t hReg{0x1}, lReg{0x4D};   //Can be used as 2 8-bit registers or combine them to make a 16-bit register used to point at memory locations
     uint16_t sp{0xFFFE};             //Stack Pointer
-    uint16_t pc = 0x100;              //Program Counter
+    uint16_t pc = 0x100;             //Program Counter
     uint16_t Opcode{};
     
     uint8_t cycles{};
-    uint16_t m_CurrentCycles{};
     
     
 
@@ -190,6 +189,8 @@ class Z80g
     void Clock();
     void ResetCpu();
     void ServiceInterrupts();
+    void DoDmaTransfer(uint16_t addr, uint8_t data);
+
 
     
     uint8_t read(uint16_t addr);
