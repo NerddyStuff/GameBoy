@@ -37,8 +37,9 @@ Bus::Bus()
         i = 0x00;
 };
 
-Bus::~Bus(){
-    //Does nothing
+Bus::~Bus()
+{
+    
 };
 
 void Bus::write(uint16_t addr, uint8_t data)
@@ -48,9 +49,9 @@ void Bus::write(uint16_t addr, uint8_t data)
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF) //VRAM
     {
-        if (m_Screen.LCD_Control.LCD_Enable == 0)
+        if (m_Screen.LCD_Status.Mode_Flag != 3)
         {
-            uint16_t mAddr = addr & 0x1FFF;
+            uint16_t mAddr = (addr & 0x1FFF);
             m_VRAM.get()[mAddr] = data;
         }
     }
@@ -68,7 +69,7 @@ void Bus::write(uint16_t addr, uint8_t data)
     {
         if ((m_Screen.LCD_Control.LCD_Enable == 0) && (m_Screen.LCD_Status.Mode_Flag == 0 || m_Screen.LCD_Status.Mode_Flag == 1))
         {
-            uint16_t mAddr = addr & 0x00FF;
+            uint16_t mAddr = (addr & 0x00FF);
             a_OAM[mAddr] = data;
         }
     }
@@ -95,7 +96,7 @@ void Bus::write(uint16_t addr, uint8_t data)
             m_Screen.m_SCX = data;
             break;
         case LY:
-            // m_Screen.m_ScanlineCount = data;
+            m_Screen.m_ScanlineCount = 0;
             break;
         case LYC:
             m_Screen.m_LYC = data;
@@ -142,27 +143,27 @@ uint8_t Bus::read(uint16_t addr)
     }
     else if (addr >= 0x8000 && addr <= 0x9FFF) //VRAM
     {
-        if (m_Screen.LCD_Control.LCD_Enable == 0)
+        if (m_Screen.LCD_Status.Mode_Flag != 3)
         {
-            uint16_t mAddr = addr & 0x1FFF;
+            uint16_t mAddr = (addr & 0x1FFF);
             data = m_VRAM.get()[mAddr];
         }
     }
     else if (addr >= 0xA000 && addr <= 0xBFFF) //Cartridge RAM
     {
-        uint16_t mAddr = addr & 0x1FFF;
+        uint16_t mAddr = (addr & 0x1FFF);
         data = cart.get()->m_Ram[mAddr];
     }
     else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //WRAM
     {
-        uint16_t mAddr = addr & 0x1FFF;
+        uint16_t mAddr = (addr & 0x1FFF);
         data = a_WRAM[mAddr];
     }
     else if (addr >= 0xFE00 && addr <= 0xFE9F) //OAM
     {
         if ((m_Screen.LCD_Control.LCD_Enable == 0) && (m_Screen.LCD_Status.Mode_Flag == 0 || m_Screen.LCD_Status.Mode_Flag == 1))
         {
-            uint16_t mAddr = addr & 0x00FF;
+            uint16_t mAddr = (addr & 0x00FF);
             data = a_OAM[mAddr];
         }
     }
@@ -197,7 +198,7 @@ uint8_t Bus::read(uint16_t addr)
         case DMA:
             data = 0xFF;
             break;
-         case BGP:
+        case BGP:
             data = m_Screen.m_BGP.reg;           
             break;
         case OBP0:

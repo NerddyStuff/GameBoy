@@ -40,10 +40,10 @@ class Bus
         Bus();
         ~Bus();
         
-        Timer m_Timer;                      //
-        Z80g m_Cpu;                         //  Devices on the Bus
-        LCD m_Screen;                       //
         std::shared_ptr<Cartridge> cart;    //
+        Z80g m_Cpu;                         //  Devices on the Bus
+        Timer m_Timer;                      //
+        LCD m_Screen;                       //
         
         std::array<uint8_t, 1024 * 8> a_WRAM;                                         //
         std::array<uint8_t, 0xA0> a_OAM;                                              //    Memory devices on bus
@@ -51,7 +51,7 @@ class Bus
         std::unique_ptr<uint8_t[]> a_HRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7E + 1));    //
         std::unique_ptr<uint8_t[]> m_VRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(VRAMSIZE + 1));
 
-        
+
         bool m_IMEFlag = true;
 
         union 

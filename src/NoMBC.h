@@ -6,7 +6,7 @@ class NoMBC : public MBC_Base
         NoMBC();
         ~NoMBC();
 
-        bool mbcRead(uint16_t addr, uint32_t &mbcAddr) override;
-        bool mbcWrite(uint16_t addr, uint32_t &mbcAddr) override;
+        bool mbcRead(uint16_t addr, uint16_t &mbcAddr) override;
+        bool mbcWrite(uint16_t addr, uint16_t &mbcAddr) override;
     
 };

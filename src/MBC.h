@@ -47,8 +47,8 @@ class MBC_Base
         MBC_Base();
         ~MBC_Base();
 
-        virtual bool mbcRead(uint16_t addr, uint32_t &mbcaddr) = 0;
-        virtual bool mbcWrite(uint16_t addr, uint32_t &mbcAddr) = 0;
+        virtual bool mbcRead(uint16_t addr, uint16_t &mbcaddr) = 0;
+        virtual bool mbcWrite(uint16_t addr, uint16_t &mbcAddr) = 0;
 
 };
 

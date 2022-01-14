@@ -624,44 +624,54 @@ void Z80g::ServiceInterrupts()
                     switch (i)
                     {
                     case 1:
-                        //  Call VBlanc interrupt
+                        //  Call VBlank interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
+                        sp--;
                         pc = 0x0040;
                         IRHandled = true;
+                        bus->m_IMEFlag = !bus->m_IMEFlag;
                         break;
                     case 2:
                         //  Call STAT interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
+                        sp--;
                         pc = 0x0048;
                         IRHandled = true;
+                        bus->m_IMEFlag = !bus->m_IMEFlag;
                         break;
                     case 4:
                         //  Call Timer interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
+                        sp--;
                         pc = 0x0050;
                         IRHandled = true;
+                        bus->m_IMEFlag = !bus->m_IMEFlag;
                         break;
                     case 8:
                         //  Call Serial interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
+                        sp--;
                         pc = 0x0058;
                         IRHandled = true;
+                        bus->m_IMEFlag = !bus->m_IMEFlag;
                         break;
                     case 16:
                         //  Call Joypad interrupt
                         write(sp, (pc & 0xFF00));
                         sp--;
                         write(sp, (pc & 0x00FF));
+                        sp--;
                         pc = 0x0060;
                         IRHandled = true;
+                        bus->m_IMEFlag = !bus->m_IMEFlag;
                         break;
                     default:
                         break;
@@ -1936,9 +1946,9 @@ void Z80g::Opx96()
 void Z80g::Opx97()
 {
     cycles = 1;
-
+    uint8_t hcompare = (((aReg & 0xF) - (aReg & 0xF)) & 0x10);
     SetFlag(C, (aReg -= aReg) < 0x00);
-    SetFlag(H, ((((aReg & 0xF) - (aReg & 0xF)) & 0x10) == 0x10));
+    SetFlag(H, hcompare == 0x10);
 
     aReg -= aReg;
 
@@ -2366,9 +2376,12 @@ void Z80g::OpxBE()
 void Z80g::OpxBF()
 {
     cycles = 1;
+
+    uint8_t hcompare = (((aReg & 0xF) - (aReg & 0xF)) & 0x10);
+
     SetFlag(Z, (aReg - aReg) == 0);
     SetFlag(N, true);
-    SetFlag(H, (((aReg & 0xF) - (aReg & 0xF)) & 0x10) == 0x10);
+    SetFlag(H, hcompare == 0x10);
     SetFlag(C, (aReg - aReg) < 0x00);
 }
 void Z80g::OpxC6()
@@ -2938,7 +2951,7 @@ void Z80g::OpxD9()
     pc |= (hi << 8);
     pc |= lo;
 
-    bus->m_IMEFlag ^= 1;
+    bus->m_IMEFlag = !bus->m_IMEFlag;
 }
 void Z80g::OpxE9()
 {

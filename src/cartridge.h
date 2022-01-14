@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <fstream>
-#include <vector>
 #include <memory>
 
 #include "NoMBC.h"
@@ -15,6 +14,8 @@ class Cartridge
     
     std::unique_ptr<uint8_t[]> m_Ram;   
     std::unique_ptr<uint8_t[]> m_Rom;
+
+
     std::unique_ptr<MBC_Base> m_MemoryController;
 
     

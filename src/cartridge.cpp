@@ -77,7 +77,7 @@ Cartridge::~Cartridge()
 
 bool Cartridge::c_Read(uint16_t addr, uint8_t &data)
 {
-	uint32_t mbcADDR = 0;
+	uint16_t mbcADDR = 0;
 	
 	if (m_MemoryController.get()->mbcRead(addr, mbcADDR))
 	{
@@ -92,7 +92,7 @@ bool Cartridge::c_Read(uint16_t addr, uint8_t &data)
 
 bool Cartridge::c_Write(uint16_t addr, uint8_t data)
 {
-	uint32_t mbcADDR = 0;
+	uint16_t mbcADDR = 0;
 	
 	if (m_MemoryController.get()->mbcWrite(addr, mbcADDR))
 	{
