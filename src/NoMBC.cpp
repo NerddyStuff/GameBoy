@@ -9,7 +9,7 @@ NoMBC::~NoMBC()
     
 }
 
-bool NoMBC::mbcRead(uint16_t addr, uint16_t &mbcAddr)
+bool NoMBC::mbcRead(uint16_t addr, uint32_t &mbcAddr)
 {
     if (addr >= 0x0000 && addr <= 0x7FFF)
     {
@@ -20,7 +20,7 @@ bool NoMBC::mbcRead(uint16_t addr, uint16_t &mbcAddr)
     return false;
 }
 
-bool NoMBC::mbcWrite(uint16_t addr, uint16_t &mbcAddr)
+bool NoMBC::mbcWrite(uint16_t addr, uint8_t data, uint16_t &mbcAddr)
 {
     if (addr >= 0x0000 && addr <= 0x7FFF)
     {
@@ -29,4 +29,7 @@ bool NoMBC::mbcWrite(uint16_t addr, uint16_t &mbcAddr)
     }
     
     return false;
+}
+void NoMBC::Set(uint8_t)
+{
 }

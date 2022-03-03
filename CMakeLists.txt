@@ -11,9 +11,9 @@ add_executable(gameboy
     src/cartridge.cpp
     src/NoMBC.cpp
     src/MBC.cpp
+    src/MBC1.cpp
     src/Timer.cpp
     src/LCD.cpp
-    src/sdl_graphics.cpp
     
 )
 

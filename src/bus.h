@@ -24,93 +24,92 @@
 
 #define VRAMSIZE 0x1FFF
 
+#include "SDL2/SDL.h"
+
 #include "LCD.h"
 #include "Z80g.h"
 #include "cartridge.h"
 #include "Timer.h"
 
-#include <array>
 #include <memory>
 #include <iostream>
 
 class Bus
 {
-    public:
+public:
+    Bus();
+    ~Bus();
 
-        Bus();
-        ~Bus();
-        
-        std::shared_ptr<Cartridge> cart;    //
-        Z80g m_Cpu;                         //  Devices on the Bus
-        Timer m_Timer;                      //
-        LCD m_Screen;                       //
-        
-        std::array<uint8_t, 1024 * 8> a_WRAM;                                         //
-        std::array<uint8_t, 0xA0> a_OAM;                                              //    Memory devices on bus
-        std::array<uint8_t, 0x7F + 1>  a_IOPorts;                                     //
-        std::unique_ptr<uint8_t[]> a_HRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7E + 1));    //
-        std::unique_ptr<uint8_t[]> m_VRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(VRAMSIZE + 1));
+    std::shared_ptr<Cartridge> cart; //
+    Z80g m_Cpu;                      //  Devices on the Bus
+    Timer m_Timer;                   //
+    LCD m_Screen;                    //
 
+    std::unique_ptr<uint8_t[]> a_WRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(1024 * 8));
+    std::unique_ptr<uint8_t[]> a_OAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0xA0));
+    // std::unique_ptr<uint8_t[]> a_IOPorts    = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7F));
+    std::unique_ptr<uint8_t[]> a_HRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7E + 1));
+    std::unique_ptr<uint8_t[]> m_VRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(VRAMSIZE + 1));
 
-        bool m_IMEFlag = true;
+    bool m_IMEFlag = true;
 
-        union 
+    union
+    {
+        struct
         {
-            struct
-            {
-                uint8_t u_Input_Right_A : 1;        // Bit 0
-                uint8_t u_Input_Left_B : 1;         // Bit 1
-                uint8_t u_Input_Up_Select : 1;      // Bit 2
-                uint8_t u_Input_Down_Start : 1;     // Bit 3
-                uint8_t u_DirectionSelect : 1;      // Bit 4
-                uint8_t u_ActionSelect : 1;         // Bit 5
-                uint8_t unused : 2;                 // Bits 6 - 7
-            };
+            uint8_t u_Input_Right_A : 1;    // Bit 0
+            uint8_t u_Input_Left_B : 1;     // Bit 1
+            uint8_t u_Input_Up_Select : 1;  // Bit 2
+            uint8_t u_Input_Down_Start : 1; // Bit 3
+            uint8_t u_DirectionSelect : 1;  // Bit 4
+            uint8_t u_ActionSelect : 1;     // Bit 5
+            uint8_t unused : 2;             // Bits 6 - 7
+        };
 
-            uint8_t reg;
+        uint8_t reg;
 
-        } m_InputStatus;
-        
-        union 
+    } m_InputStatus;
+
+    union
+    {
+        struct
         {
-            struct 
-            {   
-                uint8_t u_VBlank_interrupt : 1;                  
-                uint8_t u_LCDStat_Interrupt : 1;            
-                uint8_t u_Timer_Interrupt : 1;          
-                uint8_t u_Serial_Interrupt : 1;         
-                uint8_t u_JoyPad_Interrupt : 1;         
-                uint8_t unused : 3;         
-            };
-            uint8_t reg;
+            uint8_t u_VBlank_interrupt : 1;
+            uint8_t u_LCDStat_Interrupt : 1;
+            uint8_t u_Timer_Interrupt : 1;
+            uint8_t u_Serial_Interrupt : 1;
+            uint8_t u_JoyPad_Interrupt : 1;
+            uint8_t unused : 3;
+        };
+        uint8_t reg;
 
-        } m_IEFlag;     // 0xFFFF
-        
-         union 
+    } m_IEFlag; // 0xFFFF
+
+    union
+    {
+        struct
         {
-            struct 
-            {   
-                uint8_t u_VBlank_interrupt : 1;
-                uint8_t u_LCDStat_Interrupt : 1;
-                uint8_t u_Timer_Interrupt : 1;
-                uint8_t u_Serial_Interrupt : 1;
-                uint8_t u_JoyPad_Interrupt : 1;
-                uint8_t unused : 3;
-            };
-            uint8_t reg;
+            uint8_t u_VBlank_interrupt : 1;
+            uint8_t u_LCDStat_Interrupt : 1;
+            uint8_t u_Timer_Interrupt : 1;
+            uint8_t u_Serial_Interrupt : 1;
+            uint8_t u_JoyPad_Interrupt : 1;
+            uint8_t unused : 3;
+        };
+        uint8_t reg;
 
-        } m_IRFlag;     //0xFF0F
-        
-        
-        
-        void write(uint16_t addr, uint8_t data);
-        uint8_t read(uint16_t addr);
+    } m_IRFlag; // 0xFF0F
 
+    uint8_t m_SerialData;
+    uint8_t m_STC;
 
-        void InsertGame(std::shared_ptr<Cartridge> &Cartridge);
-        void BusClock();
-        void BusReset();
+    void write(uint16_t addr, uint8_t data);
+    uint8_t read(uint16_t addr);
 
+    void InsertGame(std::shared_ptr<Cartridge> &Cartridge);
+    void BusClock();
+    void BusReset();
+
+    // SDL related functions
+    void UpdateKeys(bool &quit);
 };
-
-

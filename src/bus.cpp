@@ -7,65 +7,36 @@ Bus::Bus()
     m_Screen.connectScreen(this);
 
     m_InputStatus.reg = 0xCF;
-
-    a_IOPorts[0x0F] = 0xE1;
-    a_IOPorts[0x40] = 0x91;
-    a_IOPorts[0x41] = 0x85;
-    a_IOPorts[0x42] = 0x00;
-    a_IOPorts[0x43] = 0x00;
-    a_IOPorts[0x44] = 0x00;
-    a_IOPorts[0x45] = 0x00;
-    a_IOPorts[0x46] = 0xFF;
-    a_IOPorts[0x47] = 0xFC;
-    a_IOPorts[0x4A] = 0x00;
-    a_IOPorts[0x4B] = 0x00;
-    a_IOPorts[0x4D] = 0xFF;
-    a_IOPorts[0x4F] = 0xFF;
-    a_IOPorts[0x51] = 0xFF;
-    a_IOPorts[0x52] = 0xFF;
-    a_IOPorts[0x53] = 0xFF;
-    a_IOPorts[0x54] = 0xFF;
-    a_IOPorts[0x55] = 0xFF;
-    a_IOPorts[0x56] = 0xFF;
-    a_IOPorts[0x68] = 0xFF;
-    a_IOPorts[0x69] = 0xFF;
-    a_IOPorts[0x6A] = 0xFF;
-    a_IOPorts[0x6B] = 0xFF;
-    a_IOPorts[0x70] = 0xFF;
-
-    for (auto &i : a_WRAM)
-        i = 0x00;
 };
 
-Bus::~Bus()
-{
-    
+Bus::~Bus(){
+
 };
 
 void Bus::write(uint16_t addr, uint8_t data)
 {
-    if (cart.get()->c_Write(addr, data)) //Cartridge
+    if (cart.get()->c_Write(addr, data)) // Cartridge
     {
     }
-    else if (addr >= 0x8000 && addr <= 0x9FFF) //VRAM
+    else if (addr >= 0x8000 && addr <= 0x9FFF) // VRAM
     {
         if (m_Screen.LCD_Status.Mode_Flag != 3)
         {
             uint16_t mAddr = (addr & 0x1FFF);
-            m_VRAM.get()[mAddr] = data;
+            m_VRAM[mAddr] = data;
         }
     }
-    else if (addr >= 0xA000 && addr <= 0xBFFF) //Cartridge RAM
+    else if (addr >= 0xA000 && addr <= 0xBFFF) // Cartridge RAM
     {
         uint16_t mAddr = addr & 0x1FFF;
         cart.get()->m_Ram[mAddr] = data;
     }
-    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //WRAM
+    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) // WRAM
     {
         uint16_t mAddr = addr & 0x1FFF;
         a_WRAM[mAddr] = data;
     }
-    else if (addr >= 0xFE00 && addr <= 0xFE9F) //OAM
+    else if (addr >= 0xFE00 && addr <= 0xFE9F) // OAM
     {
         if ((m_Screen.LCD_Control.LCD_Enable == 0) && (m_Screen.LCD_Status.Mode_Flag == 0 || m_Screen.LCD_Status.Mode_Flag == 1))
         {
@@ -73,12 +44,30 @@ void Bus::write(uint16_t addr, uint8_t data)
             a_OAM[mAddr] = data;
         }
     }
-    else if (addr >= 0xFF00 && addr <= 0xFF7F) //IO Ports
+    else if (addr >= 0xFF00 && addr <= 0xFF7F) // IO Ports
     {
         switch (addr)
         {
         case JOYPAD:
             m_InputStatus.reg = data;
+            break;
+        case 0xFF01:
+            m_SerialData = data;
+            break;
+        case 0xFF02:
+            m_STC = data;
+            break;
+        case DIV:
+            m_Timer.t_Write(addr, data);
+            break;
+        case TIMA:
+            m_Timer.t_Write(addr, data);
+            break;
+        case TMA:
+            m_Timer.t_Write(addr, data);
+            break;
+        case TAC:
+            m_Timer.t_Write(addr, data);
             break;
         case IF:
             m_IRFlag.reg = data;
@@ -123,12 +112,12 @@ void Bus::write(uint16_t addr, uint8_t data)
             break;
         }
     }
-    else if (addr >= 0xFF80 && addr <= 0xFFFE) //HRAM
+    else if (addr >= 0xFF80 && addr <= 0xFFFE) // HRAM
     {
         uint16_t mAddr = (addr & 0x00FF);
         a_HRAM[mAddr] = data;
     }
-    else if (addr == 0xFFFF) //Interrupts
+    else if (addr == 0xFFFF) // Interrupts
     {
         m_IEFlag.reg = data;
     }
@@ -141,25 +130,25 @@ uint8_t Bus::read(uint16_t addr)
     if (cart.get()->c_Read(addr, data))
     {
     }
-    else if (addr >= 0x8000 && addr <= 0x9FFF) //VRAM
+    else if (addr >= 0x8000 && addr <= 0x9FFF) // VRAM
     {
         if (m_Screen.LCD_Status.Mode_Flag != 3)
         {
             uint16_t mAddr = (addr & 0x1FFF);
-            data = m_VRAM.get()[mAddr];
+            data = m_VRAM[mAddr];
         }
     }
-    else if (addr >= 0xA000 && addr <= 0xBFFF) //Cartridge RAM
+    else if (addr >= 0xA000 && addr <= 0xBFFF) // Cartridge RAM
     {
         uint16_t mAddr = (addr & 0x1FFF);
         data = cart.get()->m_Ram[mAddr];
     }
-    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) //WRAM
+    else if ((addr >= 0xC000 && addr <= 0xDFFF) || (addr >= 0xE000 && addr <= 0xFDFF)) // WRAM
     {
         uint16_t mAddr = (addr & 0x1FFF);
         data = a_WRAM[mAddr];
     }
-    else if (addr >= 0xFE00 && addr <= 0xFE9F) //OAM
+    else if (addr >= 0xFE00 && addr <= 0xFE9F) // OAM
     {
         if ((m_Screen.LCD_Control.LCD_Enable == 0) && (m_Screen.LCD_Status.Mode_Flag == 0 || m_Screen.LCD_Status.Mode_Flag == 1))
         {
@@ -167,12 +156,30 @@ uint8_t Bus::read(uint16_t addr)
             data = a_OAM[mAddr];
         }
     }
-    else if (addr >= 0xFF00 && addr <= 0xFF7F) //IO Ports
+    else if (addr >= 0xFF00 && addr <= 0xFF7F) // IO Ports
     {
         switch (addr)
         {
         case JOYPAD:
             data = m_InputStatus.reg;
+            break;
+        case 0xFF01:
+            data = m_SerialData;
+            break;
+        case 0xFF02:
+            data = m_STC;
+            break;
+        case DIV:
+            m_Timer.t_Read(addr);
+            break;
+        case TIMA:
+            m_Timer.t_Read(addr);
+            break;
+        case TMA:
+            m_Timer.t_Read(addr);
+            break;
+        case TAC:
+            m_Timer.t_Read(addr);
             break;
         case IF:
             data = m_IRFlag.reg;
@@ -199,7 +206,7 @@ uint8_t Bus::read(uint16_t addr)
             data = 0xFF;
             break;
         case BGP:
-            data = m_Screen.m_BGP.reg;           
+            data = m_Screen.m_BGP.reg;
             break;
         case OBP0:
             data = m_Screen.m_OBP0.reg;
@@ -218,13 +225,12 @@ uint8_t Bus::read(uint16_t addr)
             break;
         }
     }
-
-    else if (addr >= 0xFF80 && addr <= 0xFFFE) //HRAM
+    else if (addr >= 0xFF80 && addr <= 0xFFFE) // HRAM
     {
         uint16_t mAddr = (addr & 0x00FF);
         data = a_HRAM[mAddr];
     }
-    else if (addr == 0xFFFF) //Interrupt register
+    else if (addr == 0xFFFF) // Interrupt register
     {
         data = m_IEFlag.reg;
     }
@@ -247,4 +253,30 @@ void Bus::BusClock()
 void Bus::BusReset()
 {
     m_Cpu.ResetCpu();
+}
+void Bus::UpdateKeys(bool &quit)
+{
+    SDL_Event e;
+
+    while (SDL_PollEvent(&e) != 0)
+    {
+        switch (e.type)
+        {
+        case SDL_KEYDOWN:
+            switch (e.key.keysym.sym)
+            {
+            case SDLK_ESCAPE:
+                quit = false;
+                break;
+
+            default:
+                break;
+            }
+            break;
+        case SDL_QUIT:
+            quit = false;
+        default:
+            break;
+        }
+    }
 }

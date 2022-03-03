@@ -41,14 +41,21 @@
 #define	MByte_4 0x07
 #define	MByte_8 0x08
 
+#define NORAM 0x00
+#define RAM_8KB 0x02
+#define RAM_32KB 0x03
+#define RAM_128KB 0x04
+#define RAM_64KB 0x05
+
 class MBC_Base
 {
     public:
         MBC_Base();
         ~MBC_Base();
-
-        virtual bool mbcRead(uint16_t addr, uint16_t &mbcaddr) = 0;
-        virtual bool mbcWrite(uint16_t addr, uint16_t &mbcAddr) = 0;
+        
+        virtual bool mbcRead(uint16_t addr, uint32_t &mbcaddr) = 0;
+        virtual bool mbcWrite(uint16_t addr, uint8_t data, uint16_t &mbcAddr) = 0;
+        virtual void Set(uint8_t data) = 0;
 
 };
 

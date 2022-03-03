@@ -1011,8 +1011,10 @@ void Z80g::Opx36()
     cycles = 3;
 
     uint16_t HL = ((hReg << 8) | lReg);
+    uint8_t d8 = read(pc);
+    pc++;
 
-    write(HL, read(pc));
+    write(HL, d8);
 }
 void Z80g::Opx3E()
 {
@@ -1160,21 +1162,21 @@ void Z80g::Opx32()
 void Z80g::Opx0A()
 {
     cycles = 2;
-    uint16_t BC = ((bReg < 8) | cReg);
+    uint16_t BC = ((bReg << 8) | cReg);
 
     aReg = read(BC);
 }
 void Z80g::Opx1A()
 {
     cycles = 2;
-    uint16_t DE = ((dReg < 8) | eReg);
+    uint16_t DE = ((dReg << 8) | eReg);
 
     aReg = read(DE);
 }
 void Z80g::Opx2A()
 {
     cycles = 2;
-    uint16_t HL = ((hReg < 8) | lReg);
+    uint16_t HL = ((hReg << 8) | lReg);
     HL++;
     aReg = read(HL);
     uint8_t NewH = (HL & 0xFF00) >> 8;
@@ -1187,7 +1189,7 @@ void Z80g::Opx2A()
 void Z80g::Opx3A()
 {
     cycles = 2;
-    uint16_t HL = ((hReg < 8) | lReg);
+    uint16_t HL = ((hReg << 8) | lReg);
     aReg = read(HL);
     HL--;
     uint8_t NewH = (HL & 0xFF00) >> 8;
@@ -2214,8 +2216,10 @@ void Z80g::OpxAE()
 {
     cycles = 2;
     uint16_t HL = ((hReg << 8) | lReg);
+    uint8_t cHL = read(HL);
 
-    aReg ^= read(HL);
+
+    aReg ^= cHL;
 
     SetFlag(Z, aReg == 0);
     SetFlag(N, false);
@@ -2598,7 +2602,7 @@ void Z80g::Opx08()
 
     uint16_t a16 = (hi << 8) | lo;
     uint8_t splo = (sp & 0x00FF);
-    uint8_t sphi = (sp & 0xFF00) >> 8;
+    uint8_t sphi = ((sp & 0xFF00) >> 8);
 
     write(a16, splo);
     write((a16 + 1), sphi);
@@ -2612,7 +2616,7 @@ void Z80g::OpxFA()
     uint8_t hi = read(pc);
     pc++;
 
-    uint16_t a16 = (hi << 8) | lo;
+    uint16_t a16 = ((hi << 8) | lo);
 
     aReg = read(a16);
 }
@@ -2625,38 +2629,38 @@ void Z80g::OpxEA()
     uint8_t hi = read(pc);
     pc++;
 
-    uint16_t a16 = (hi << 8) | lo;
+    uint16_t a16 = ((hi << 8) | lo);
 
     write(a16, aReg);
 }
 void Z80g::OpxE0()
 {
     cycles = 3;
-
-    uint16_t a8 = 0xFF00 | read(pc);
+    uint8_t d8 = read(pc);
     pc++;
+    uint16_t a8 = (0xFF00 | d8);
     write(a8, aReg);
 }
 void Z80g::OpxF0()
 {
     cycles = 3;
-
-    uint16_t a8 = 0xFF00 | read(pc);
+    uint8_t d8 = read(pc);
     pc++;
-    aReg = bus->read(a8);
+    uint16_t a16 = (0xFF00 | d8);
+    aReg = bus->read(a16);
 }
 void Z80g::OpxE2()
 {
     cycles = 2;
 
-    uint16_t a8 = 0xFF00 | cReg;
+    uint16_t a8 = (0xFF00 | cReg);
     write(a8, aReg);
 }
 void Z80g::OpxF2()
 {
     cycles = 2;
 
-    uint16_t a8 = 0xFF00 | cReg;
+    uint16_t a8 = (0xFF00 | cReg);
     aReg = read(a8);
 }
 void Z80g::OpxC5()
@@ -3023,7 +3027,7 @@ void Z80g::OpxC2()
         uint8_t hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
 
         pc = a16;
     }
@@ -3041,7 +3045,7 @@ void Z80g::OpxD2()
         uint8_t hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
 
         pc = a16;
     }
@@ -3059,7 +3063,7 @@ void Z80g::OpxCA()
         uint8_t hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
 
         pc = a16;
     }
@@ -3077,7 +3081,7 @@ void Z80g::OpxDA()
         uint8_t hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
 
         pc = a16;
     }
@@ -3087,7 +3091,7 @@ void Z80g::OpxCD()
     cycles = 6;
 
     uint8_t lo = (pc & 0x00FF);
-    uint8_t hi = (pc & 0xFF00) >> 8;
+    uint8_t hi = ((pc & 0xFF00) >> 8);
 
     write(sp, hi);
     --sp;
@@ -3099,7 +3103,7 @@ void Z80g::OpxCD()
     hi = read(pc);
     pc++;
 
-    uint16_t a16 = (hi << 8) | lo;
+    uint16_t a16 = ((hi << 8) | lo);
     pc = a16;
 }
 void Z80g::OpxCC()
@@ -3111,7 +3115,7 @@ void Z80g::OpxCC()
         cycles = 6;
 
         uint8_t lo = (pc & 0x00FF);
-        uint8_t hi = (pc & 0xFF00) >> 8;
+        uint8_t hi = ((pc & 0xFF00) >> 8);
 
         write(sp, hi);
         --sp;
@@ -3123,7 +3127,7 @@ void Z80g::OpxCC()
         hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
         pc = a16;
     }
 }
@@ -3136,7 +3140,7 @@ void Z80g::OpxDC()
         cycles = 6;
 
         uint8_t lo = (pc & 0x00FF);
-        uint8_t hi = (pc & 0xFF00) >> 8;
+        uint8_t hi = ((pc & 0xFF00) >> 8);
 
         write(sp, hi);
         --sp;
@@ -3148,7 +3152,7 @@ void Z80g::OpxDC()
         hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
         pc = a16;
     }
 }
@@ -3161,7 +3165,7 @@ void Z80g::OpxC4()
         cycles = 6;
 
         uint8_t lo = (pc & 0x00FF);
-        uint8_t hi = (pc & 0xFF00) >> 8;
+        uint8_t hi = ((pc & 0xFF00) >> 8);
 
         write(sp, hi);
         --sp;
@@ -3173,7 +3177,7 @@ void Z80g::OpxC4()
         hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
         pc = a16;
     }
 }
@@ -3186,7 +3190,7 @@ void Z80g::OpxD4()
         cycles = 6;
 
         uint8_t lo = (pc & 0x00FF);
-        uint8_t hi = (pc & 0xFF00) >> 8;
+        uint8_t hi = ((pc & 0xFF00) >> 8);
 
         write(sp, hi);
         --sp;
@@ -3198,7 +3202,7 @@ void Z80g::OpxD4()
         hi = read(pc);
         pc++;
 
-        uint16_t a16 = (hi << 8) | lo;
+        uint16_t a16 = ((hi << 8) | lo);
         pc = a16;
     }
 }
@@ -3209,7 +3213,7 @@ void Z80g::Opx00()
 }
 void Z80g::Opx76() //Halt
 {
-    bool haltQuit = 0;
+    bool haltQuit = false;
     cycles = 1;
 
     while (!haltQuit)

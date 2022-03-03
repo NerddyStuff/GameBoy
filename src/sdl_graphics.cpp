@@ -16,7 +16,7 @@ Graphics::Graphics(int scale)
         printf("Failed to create renderer");
     }
 
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 160, 144);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB4444, SDL_TEXTUREACCESS_STREAMING, 160, 144);
     if (texture == NULL)
     {
         printf("Failed to create texture");
@@ -25,20 +25,9 @@ Graphics::Graphics(int scale)
 
 void Graphics::UpdateScreen(const void *pixeldata, int size)
 {
-    if (SDL_UpdateTexture(texture, nullptr, pixeldata, size) != 0)
-    {
-        printf("Failed to update texture");
-    }
-
-    if (SDL_RenderClear(renderer) != 0)
-    {
-        printf("Failed to clear renderer");
-    }
-    if (SDL_RenderCopy(renderer, texture, nullptr, nullptr) != 0)
-    {
-        printf("Failed to copy renderer");
-    }
-    
+    SDL_UpdateTexture(texture, nullptr, pixeldata, size);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
 }
 

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "NoMBC.h"
+#include "MBC1.h"
 
 class Cartridge
 {
@@ -20,7 +21,6 @@ class Cartridge
 
     
     
-
     bool c_Read(uint16_t addr, uint8_t &data);
     bool c_Write(uint16_t addr, uint8_t data);
 
