@@ -24,15 +24,14 @@
 
 #define VRAMSIZE 0x1FFF
 
-#include "SDL2/SDL.h"
+#include <iostream>
+#include <memory>
 
-#include "LCD.h"
-#include "Z80g.h"
+#include "PPU.h"
+#include "Z8080.h"
 #include "cartridge.h"
 #include "Timer.h"
 
-#include <memory>
-#include <iostream>
 
 class Bus
 {
@@ -41,13 +40,12 @@ public:
     ~Bus();
 
     std::shared_ptr<Cartridge> cart; //
-    Z80g m_Cpu;                      //  Devices on the Bus
+    Z8080 m_Cpu;                     //  Devices on the Bus
     Timer m_Timer;                   //
-    LCD m_Screen;                    //
+    PPU m_PPU;                       //
 
     std::unique_ptr<uint8_t[]> a_WRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(1024 * 8));
-    std::unique_ptr<uint8_t[]> a_OAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0xA0));
-    // std::unique_ptr<uint8_t[]> a_IOPorts    = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7F));
+    std::unique_ptr<uint8_t[]> a_OAM  = std::make_unique<uint8_t[]>(static_cast<size_t>(0xA0));
     std::unique_ptr<uint8_t[]> a_HRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(0x7E + 1));
     std::unique_ptr<uint8_t[]> m_VRAM = std::make_unique<uint8_t[]>(static_cast<size_t>(VRAMSIZE + 1));
 
@@ -100,8 +98,8 @@ public:
 
     } m_IRFlag; // 0xFF0F
 
-    uint8_t m_SerialData;
-    uint8_t m_STC;
+    uint8_t m_SerialData;   
+    uint8_t m_STC;          // Serial Transfer Control
 
     void write(uint16_t addr, uint8_t data);
     uint8_t read(uint16_t addr);

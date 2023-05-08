@@ -16,6 +16,7 @@ class Cartridge
     std::unique_ptr<uint8_t[]> m_Ram;   
     std::unique_ptr<uint8_t[]> m_Rom;
 
+    bool ramEnable = false;
 
     std::unique_ptr<MBC_Base> m_MemoryController;
 

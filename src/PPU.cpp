@@ -1,7 +1,6 @@
-#include "LCD.h"
 #include "bus.h"
 
-LCD::LCD()
+PPU::PPU()
 {
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -23,13 +22,9 @@ LCD::LCD()
         printf("Failed to create texture");
     }
 
-    ColorPallete[0] = 0xFFFFFFFF;
-    ColorPallete[1] = 0xFFCCCCCC;
-    ColorPallete[2] = 0xFF777777;
-    ColorPallete[3] = 0x00000000;
 }
 
-LCD::~LCD()
+PPU::~PPU()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
@@ -37,7 +32,7 @@ LCD::~LCD()
     SDL_Quit();
 }
 
-uint8_t LCD::lcd_Read(uint16_t addr)
+uint8_t PPU::PPU_Read(uint16_t addr)
 {
     if (addr == LCDC)
     {
@@ -57,7 +52,7 @@ uint8_t LCD::lcd_Read(uint16_t addr)
         return 0xFF;
     }
 }
-void LCD::lcd_Write(uint8_t data, uint16_t addr)
+void PPU::PPU_Write(uint8_t data, uint16_t addr)
 {
     if (addr == LCDC)
     {
@@ -68,7 +63,7 @@ void LCD::lcd_Write(uint8_t data, uint16_t addr)
         LCD_Status.reg = data;
     }
 }
-void LCD::SetLCDStat()
+void PPU::SetLCDStat()
 {
 
     uint8_t CurrentMode = LCD_Status.Mode_Flag;
@@ -113,7 +108,7 @@ void LCD::SetLCDStat()
         ptr->write(IF, 0x02); // Interrupt request
     }
 }
-bool LCD::DrawScanline()
+bool PPU::DrawScanline()
 {
     bool drawhandle = false;
 
@@ -131,7 +126,7 @@ bool LCD::DrawScanline()
 
     return drawhandle;
 }
-void LCD::GraphicsTick()
+void PPU::GraphicsTick()
 {
     m_ScanlineCycles++;
 
@@ -157,7 +152,7 @@ void LCD::GraphicsTick()
     }
 }
 
-void LCD::DrawBKG()
+void PPU::DrawBKG()
 {
     bool UsingSignedAddr;
 
@@ -267,10 +262,10 @@ void LCD::DrawBKG()
     }
 }
 
-void LCD::DrawOBJ()
+void PPU::DrawOBJ()
 {
 }
-uint8_t LCD::GetColor(uint8_t array[], uint8_t x)
+uint8_t PPU::GetColor(uint8_t array[], uint8_t x)
 {
 
     uint8_t pixel = array[((m_ScanlineCount * 256 * 4) + (x * 4))];
@@ -293,7 +288,7 @@ uint8_t LCD::GetColor(uint8_t array[], uint8_t x)
         break;
     }
 }
-void LCD::UpdateScreen(const void *pixeldata, int size)
+void PPU::UpdateScreen(const void *pixeldata, int size)
 {
     SDL_UpdateTexture(texture, nullptr, pixeldata, size);
     SDL_RenderClear(renderer);

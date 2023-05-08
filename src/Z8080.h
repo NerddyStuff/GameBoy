@@ -4,11 +4,11 @@
 
 class Bus;
 
-class Z80g
+class Z8080
 {
     public:
     
-        Z80g();
+        Z8080();
         
     private:
     
@@ -170,7 +170,7 @@ class Z80g
     
     
 
-    bool Stop = false;
+    bool halted = false;    // Flag that indicates if the CPU is halted
     
 
     enum FLAGS : uint8_t
@@ -197,9 +197,9 @@ class Z80g
     void write(uint16_t addr, uint8_t data);
 
 
-    typedef void(Z80g::*FunctionPointers)(void);
-    FunctionPointers table[0xFF + 1]{&Z80g::nullop};
-    FunctionPointers tableCB[0xFF +1]{&Z80g::nullop};
+    typedef void(Z8080::*FunctionPointers)(void);
+    FunctionPointers table[0xFF + 1]{&Z8080::nullop};
+    FunctionPointers tableCB[0xFF +1]{&Z8080::nullop};
     
     
     void connectBus(Bus *p){bus = p;}

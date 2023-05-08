@@ -1,6 +1,6 @@
-#include "Z80g.h"
+#include "Z8080.h"
 
-using a = Z80g;
+using a = Z8080;
 
 void a::OpxCB00()
 {

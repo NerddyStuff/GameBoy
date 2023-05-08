@@ -1,12 +1,8 @@
-#include "sdl_graphics.h"
 #include "bus.h"
-#include "Z80g.h"
-#include "cartridge.h"
 
-Bus GameBoy;
 int main(int argc, char *argv[])
 {
-
+    Bus GameBoy;
     std::shared_ptr<Cartridge> cart;
     const char *filename = argv[1];
     cart = std::make_shared<Cartridge>(filename);
@@ -21,7 +17,8 @@ int main(int argc, char *argv[])
     }
 
     GameBoy.~Bus();
-    printf("Gameboy Terminated\n");
 
+    SDL_Log("Gameboy Terminated");
+    SDL_Quit();
     return 0;
 }

@@ -72,11 +72,13 @@ Cartridge::Cartridge(const std::string FileName)
 			m_MemoryController = std::make_unique<MBC_1>();
 			m_Ram = std::make_unique<uint8_t[]>(static_cast<size_t>(RamSize));
 			m_MemoryController.get()->Set(header.gType);
+			ramEnable = true;
 			break;
 		case MBC1_RAM_BATTERY:
 			m_MemoryController = std::make_unique<MBC_1>();
 			m_Ram = std::make_unique<uint8_t[]>(static_cast<size_t>(RamSize));
 			m_MemoryController.get()->Set(header.gType);
+			ramEnable = true;
 			break;
 		default:
 			printf("MBC Unknown or not supported\n");

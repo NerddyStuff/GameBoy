@@ -29,7 +29,9 @@ bool MBC_1::mbcRead(uint16_t addr, uint32_t &mbcaddr)
         }
 
         mbcaddr = addr;
+        return true;
     }
+
     else if (addr >= 0x4000 && addr <= 0x7FFF)
     {
         uint8_t CurrentBank = m_ROMBankNumberRegister.reg;
@@ -312,6 +314,8 @@ bool MBC_1::mbcRead(uint16_t addr, uint32_t &mbcaddr)
             break;
         }
     }
+
+    return false;
 }
 bool MBC_1::mbcWrite(uint16_t addr, uint8_t data, uint16_t &mbcaddr)
 {

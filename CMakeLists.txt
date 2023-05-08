@@ -5,7 +5,7 @@ find_package(SDL2 REQUIRED)
 
 add_executable(gameboy
     src/main.cpp
-    src/Z80g.cpp
+    src/Z8080.cpp
     src/bus.cpp
     src/cbOpcodes.cpp
     src/cartridge.cpp
@@ -13,10 +13,10 @@ add_executable(gameboy
     src/MBC.cpp
     src/MBC1.cpp
     src/Timer.cpp
-    src/LCD.cpp
-    
+    src/PPU.cpp 
 )
 
-target_compile_options(gameboy PRIVATE -Wall)
+target_link_libraries(gameboy PRIVATE ${SDL2_LIBRARIES})
 
-target_link_libraries(gameboy PRIVATE SDL2::SDL2)
+
+

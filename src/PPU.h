@@ -1,24 +1,22 @@
 #pragma once
 
-#include "SDL2/SDL.h"
-
+#include <SDL2/SDL.h>
 #include <memory>
 #include <array>
 
 class Bus;
-class LCD
+class PPU
 {
 private:
     Bus *ptr = nullptr;
 
 public:
-    LCD();
-    ~LCD();
+    PPU();
+    ~PPU();
 
     SDL_Window *window;
     SDL_Texture *texture;
     SDL_Renderer *renderer;
-    uint32_t ColorPallete[4];
     uint8_t m_PixelValues[256 * 256 * 4];
     std::unique_ptr<uint8_t[]> m_FrameBufferA = std::make_unique<uint8_t[]>(static_cast<size_t>(160 * 144 * 4));
 
@@ -113,8 +111,8 @@ public:
 
     uint8_t GetColor(uint8_t array[], uint8_t x);    
 
-    uint8_t lcd_Read(uint16_t addr);
-    void lcd_Write(uint8_t data, uint16_t addr);
+    uint8_t PPU_Read(uint16_t addr);
+    void PPU_Write(uint8_t data, uint16_t addr);
     void connectScreen(Bus *p) { ptr = p; }
 
     // Functions using SDL
